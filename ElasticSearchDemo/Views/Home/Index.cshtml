@@ -1,0 +1,61 @@
+﻿<script type="text/javascript">
+    //$(document).ready(function () {
+    //    $.ajax({
+    //        url: "http://localhost:13325/api/Values/kloc"
+    //    }).then(function (data) {
+    //        alert(data);
+    //    });
+    //});
+
+    $(function () {
+
+        function log(message) {
+            $("<div>").text(message).prependTo("#log");
+            $("#log").scrollTop(0);
+        }
+
+        $("#city").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "http://localhost:13325/api/Values",
+                    dataType: "json",
+                    data: {
+                        id: request.term
+                    },
+                    success: function (data) {
+                        $("#hits").text(data.Hits);
+                        response($.map(data.Citys, function (item) {
+                            return {
+                                label: item.Name
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                log(ui.item ?
+                    "Selected: " + ui.item.label :
+                    "Nothing selected, input was " + this.value);
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            }
+        });
+    });
+</script>
+
+<div class="ui-widget">
+    <label for="city">Your city: </label>
+    <input id="city">
+</div>
+<br />
+Hits: <div id="hits"></div>
+
+<div class="ui-widget" style="margin-top:2em; font-family:Arial">
+    Result:
+    <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+</div>
